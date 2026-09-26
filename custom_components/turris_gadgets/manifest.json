@@ -5,8 +5,9 @@
   "integration_type": "hub",
   "config_flow": true,
   "single_config_entry": true,
-  "documentation": "https://web.archive.org/web/20210726010821/https://wiki.turris.cz/gadgets/hass",
-  "codeowners": [],
+  "documentation": "https://github.com/jan-benedikt/turris_gadgets",
+  "issue_tracker": "https://github.com/jan-benedikt/turris_gadgets/issues",
+  "codeowners": ["@jan-benedikt"],
   "dependencies": [],
   "requirements": ["pyserial-asyncio-fast==0.16"],
   "iot_class": "local_push"
