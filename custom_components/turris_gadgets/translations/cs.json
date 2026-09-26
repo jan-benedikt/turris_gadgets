@@ -1,0 +1,80 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Připojení Turris Donglu",
+        "description": "Připojte dongle a zadejte jeho sériový port.",
+        "data": {
+          "serial_port": "Sériový port",
+          "debug_logging": "Zapisovat surovou protokolovou komunikaci"
+        },
+        "data_description": {
+          "serial_port": "Například /dev/ttyUSB0 nebo stabilní cesta /dev/serial/by-id.",
+          "debug_logging": "Zapíše každý přijatý a odeslaný řádek do logu Home Assistantu. Zprávy obsahují identifikátory zařízení a mohou být velmi časté."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Na tomto sériovém portu se nepodařilo připojit k Turris Donglu."
+    },
+    "abort": {
+      "single_instance_allowed": "V současnosti lze nastavit pouze jeden Turris Dongle."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Nastavení Turris Gadgets",
+        "data": {
+          "debug_logging": "Zapisovat surovou protokolovou komunikaci"
+        },
+        "data_description": {
+          "debug_logging": "Zapíše každý přijatý a odeslaný řádek do logu Home Assistantu. Zprávy obsahují identifikátory zařízení a mohou být velmi časté."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "contact": {"name": "Kontakt"},
+      "motion": {"name": "Pohyb"},
+      "vibration": {"name": "Otřes"},
+      "smoke": {"name": "Kouř"},
+      "tamper": {"name": "Sabotáž"},
+      "low_battery": {"name": "Nízká baterie"},
+      "blackout": {"name": "Výpadek napájení"},
+      "relay": {"name": "Relé"}
+    },
+    "sensor": {
+      "current_temperature": {"name": "Aktuální teplota"},
+      "target_temperature": {"name": "Nastavená teplota"},
+      "last_seen": {"name": "Naposledy přijato"}
+    },
+    "event": {
+      "action": {
+        "name": "Akce",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "arm": "Zajištění",
+              "disarm": "Odjištění",
+              "panic": "Tíseň",
+              "press": "Stisk"
+            }
+          }
+        }
+      }
+    },
+    "switch": {
+      "pgx": {"name": "PGX"},
+      "pgy": {"name": "PGY"}
+    },
+    "siren": {
+      "alarm": {"name": "Hlasitý alarm"},
+      "chime": {"name": "Pípání"}
+    },
+    "button": {
+      "enroll": {"name": "Odeslat registrační signál"}
+    }
+  }
+}

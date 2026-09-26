@@ -1,0 +1,7 @@
+{
+  "name": "Turris Gadgets",
+  "content_in_root": false,
+  "domains": ["binary_sensor", "button", "event", "sensor", "siren", "switch"],
+  "homeassistant": "2026.9.0",
+  "render_readme": true
+}
