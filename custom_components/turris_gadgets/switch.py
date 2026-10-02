@@ -10,6 +10,8 @@ from . import TurrisGadgetsConfigEntry
 from .entity import TurrisHubEntity
 from .hub import TurrisGadgetsHub
 
+PARALLEL_UPDATES = 0
+
 OUTPUTS = (
     SwitchEntityDescription(key="pgx", translation_key="pgx"),
     SwitchEntityDescription(key="pgy", translation_key="pgy"),

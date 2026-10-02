@@ -15,9 +15,11 @@ from .protocol import (
     DongleMessage,
     MessageType,
     TransmitState,
+    clear_slot_command,
     get_slot_command,
     identify_command,
     parse_line,
+    set_slot_command,
     transmit_command,
 )
 
@@ -126,6 +128,23 @@ class DongleConnection:
             slots[slot] = response.slot_device_id
         return slots
 
+    async def async_set_slot(self, slot: int, device_id: int) -> None:
+        """Store one peripheral identifier in the dongle flash."""
+        await self._async_write_slot(set_slot_command(slot, device_id))
+
+    async def async_clear_slot(self, slot: int) -> None:
+        """Remove one peripheral identifier from the dongle flash."""
+        await self._async_write_slot(clear_slot_command(slot))
+
+    async def _async_write_slot(self, command: bytes) -> None:
+        """Write one slot and validate the dongle acknowledgement."""
+        response = await self._async_request(
+            command,
+            lambda item: item.type in {MessageType.OK, MessageType.ERROR},
+        )
+        if response.type is MessageType.ERROR:
+            raise DongleConnectionError("Dongle rejected slot update")
+
     async def async_transmit(self, state: TransmitState) -> None:
         """Transmit a receiver state three times as required by the manual."""
         command = transmit_command(state)
@@ -153,9 +172,12 @@ class DongleConnection:
             future: asyncio.Future[DongleMessage] = loop.create_future()
             self._pending = (future, matcher)
             self._log_protocol("TX", command.rstrip(b"\r\n"))
-            self._writer.write(command)
-            await self._writer.drain()
             try:
+                try:
+                    self._writer.write(command)
+                    await self._writer.drain()
+                except (OSError, RuntimeError) as err:
+                    raise DongleConnectionError("Serial write failed") from err
                 async with asyncio.timeout(timeout):
                     return await future
             except TimeoutError as err:
@@ -177,7 +199,10 @@ class DongleConnection:
                         pending[0].set_result(message)
                     continue
                 for listener in tuple(self._message_listeners):
-                    listener(message)
+                    try:
+                        listener(message)
+                    except Exception:
+                        _LOGGER.exception("Turris Gadgets message listener failed")
         except (OSError, asyncio.IncompleteReadError) as err:
             self._fail_pending(DongleConnectionError("Serial read failed", err))
         finally:
@@ -186,7 +211,10 @@ class DongleConnection:
             self._fail_pending(DongleConnectionError("Serial connection lost"))
             if not self._closing:
                 for listener in tuple(self._disconnect_listeners):
-                    listener()
+                    try:
+                        listener()
+                    except Exception:
+                        _LOGGER.exception("Turris Gadgets disconnect listener failed")
 
     def _fail_pending(self, error: Exception) -> None:
         """Fail the current request, if there is one."""

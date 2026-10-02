@@ -11,6 +11,8 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import TurrisGadgetsConfigEntry
 from .entity import TurrisHubEntity
 
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(
     _hass: HomeAssistant,

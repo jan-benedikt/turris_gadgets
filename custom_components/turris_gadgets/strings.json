@@ -13,13 +13,22 @@
           "serial_port": "For example /dev/ttyUSB0 or a stable /dev/serial/by-id path.",
           "debug_logging": "Write every received and transmitted protocol line to the Home Assistant log. Messages contain device identifiers and can be very frequent."
         }
+      },
+      "reconfigure": {
+        "title": "Change serial port",
+        "description": "Select the serial port used by the Turris Dongle. The connection is tested before saving.",
+        "data": {"serial_port": "Serial port"},
+        "data_description": {
+          "serial_port": "Prefer a stable /dev/serial/by-id path when available."
+        }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to a Turris Dongle on this serial port."
     },
     "abort": {
-      "single_instance_allowed": "Only one Turris Dongle can currently be configured."
+      "single_instance_allowed": "Only one Turris Dongle can currently be configured.",
+      "reconfigure_successful": "The serial port was updated successfully."
     }
   },
   "options": {
@@ -33,6 +42,12 @@
           "debug_logging": "Write every received and transmitted protocol line to the Home Assistant log. Messages contain device identifiers and can be very frequent."
         }
       }
+    }
+  },
+  "issues": {
+    "serial_connection_failed": {
+      "title": "Turris Dongle is unavailable",
+      "description": "Home Assistant repeatedly failed to communicate with the configured serial port. Check that the dongle is connected and accessible, or use Reconfigure on the Turris Gadgets integration to select the correct port."
     }
   },
   "entity": {

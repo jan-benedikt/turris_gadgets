@@ -184,10 +184,30 @@ def identify_command() -> bytes:
 
 def get_slot_command(slot: int) -> bytes:
     """Return the command used to read one registration slot."""
+    _validate_slot(slot)
+    return encode_command(f"GET SLOT:{slot:02d}")
+
+
+def set_slot_command(slot: int, device_id: int) -> bytes:
+    """Return the command used to store a peripheral in a slot."""
+    _validate_slot(slot)
+    if not 0 <= device_id <= 0xFFFFFF:
+        msg = f"Device ID must be a 24-bit address, got {device_id}"
+        raise ValueError(msg)
+    return encode_command(f"SET SLOT:{slot:02d} [{device_id:08d}]")
+
+
+def clear_slot_command(slot: int) -> bytes:
+    """Return the command used to clear one registration slot."""
+    _validate_slot(slot)
+    return encode_command(f"SET SLOT:{slot:02d} [--------]")
+
+
+def _validate_slot(slot: int) -> None:
+    """Validate a dongle slot number."""
     if not 0 <= slot < 32:
         msg = f"Slot must be in range 0..31, got {slot}"
         raise ValueError(msg)
-    return encode_command(f"GET SLOT:{slot:02d}")
 
 
 def transmit_command(state: TransmitState) -> bytes:

@@ -14,8 +14,11 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import TurrisGadgetsConfigEntry
+from .dynamic import setup_dynamic_entities
 from .entity import TurrisPeripheralEntity
 from .hub import Peripheral, TurrisGadgetsHub
+
+PARALLEL_UPDATES = 0
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -95,14 +98,14 @@ BATTERY_MODELS = {
 
 
 async def async_setup_entry(
-    _hass: HomeAssistant,
+    hass: HomeAssistant,
     entry: TurrisGadgetsConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up binary sensors for registered peripherals."""
     hub = entry.runtime_data
-    entities: list[TurrisBinarySensor] = []
-    for peripheral in hub.peripherals.values():
+
+    def entities_for(peripheral: Peripheral) -> list[TurrisBinarySensor]:
         descriptions: list[TurrisBinarySensorDescription] = []
         if primary := PRIMARY_DESCRIPTIONS.get(peripheral.model):
             descriptions.append(primary)
@@ -114,11 +117,12 @@ async def async_setup_entry(
             descriptions.append(BLACKOUT)
         if peripheral.model == "AC-88":
             descriptions.append(RELAY)
-        entities.extend(
+        return [
             TurrisBinarySensor(hub, peripheral, description)
             for description in descriptions
-        )
-    async_add_entities(entities)
+        ]
+
+    setup_dynamic_entities(hass, entry, async_add_entities, entities_for)
 
 
 class TurrisBinarySensor(TurrisPeripheralEntity, BinarySensorEntity):

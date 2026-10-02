@@ -5,7 +5,12 @@ from __future__ import annotations
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN
+from .const import (
+    DEVICE_IMAGE_MODELS,
+    DEVICE_IMAGE_VERSION,
+    DOMAIN,
+    PANEL_STATIC_URL,
+)
 from .hub import Peripheral, TurrisGadgetsHub
 
 
@@ -42,6 +47,11 @@ class TurrisPeripheralEntity(Entity):
     def __init__(self, hub: TurrisGadgetsHub, peripheral: Peripheral) -> None:
         self.hub = hub
         self.peripheral = peripheral
+        if peripheral.model in DEVICE_IMAGE_MODELS:
+            image_name = peripheral.model.lower()
+            self._attr_entity_picture = (
+                f"{PANEL_STATIC_URL}/devices/{image_name}.png?v={DEVICE_IMAGE_VERSION}"
+            )
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{peripheral.device_id:08d}")},
             name=f"{peripheral.model} {peripheral.device_id:08d}",
@@ -62,6 +72,8 @@ class TurrisPeripheralEntity(Entity):
 
     def _handle_hub_update(self, device_id: int | None) -> None:
         if device_id in {None, self.peripheral.device_id}:
+            if self.peripheral.device_id not in self.hub.states:
+                return
             self._update_from_hub()
             self.async_write_ha_state()
 

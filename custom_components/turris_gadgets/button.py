@@ -10,6 +10,8 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import TurrisGadgetsConfigEntry
 from .entity import TurrisHubEntity
 
+PARALLEL_UPDATES = 0
+
 ENROLL = ButtonEntityDescription(
     key="enroll",
     translation_key="enroll",

@@ -12,13 +12,22 @@
           "serial_port": "Například /dev/ttyUSB0 nebo stabilní cesta /dev/serial/by-id.",
           "debug_logging": "Zapíše každý přijatý a odeslaný řádek do logu Home Assistantu. Zprávy obsahují identifikátory zařízení a mohou být velmi časté."
         }
+      },
+      "reconfigure": {
+        "title": "Změna sériového portu",
+        "description": "Vyberte sériový port Turris Donglu. Před uložením bude spojení ověřeno.",
+        "data": {"serial_port": "Sériový port"},
+        "data_description": {
+          "serial_port": "Pokud je dostupná, použijte stabilní cestu /dev/serial/by-id."
+        }
       }
     },
     "error": {
       "cannot_connect": "Na tomto sériovém portu se nepodařilo připojit k Turris Donglu."
     },
     "abort": {
-      "single_instance_allowed": "V současnosti lze nastavit pouze jeden Turris Dongle."
+      "single_instance_allowed": "V současnosti lze nastavit pouze jeden Turris Dongle.",
+      "reconfigure_successful": "Sériový port byl úspěšně změněn."
     }
   },
   "options": {
@@ -60,10 +69,16 @@
               "disarm": "Odjištění",
               "panic": "Tíseň",
               "press": "Stisk"
-            }
-          }
-        }
       }
+    }
+  },
+  "issues": {
+    "serial_connection_failed": {
+      "title": "Turris Dongle není dostupný",
+      "description": "Home Assistant se opakovaně nedokázal spojit s nastaveným sériovým portem. Zkontrolujte připojení a oprávnění donglu, nebo v nabídce integrace Turris Gadgets zvolte Překonfigurovat a vyberte správný port."
+    }
+  }
+}
     },
     "switch": {
       "pgx": {"name": "PGX"},

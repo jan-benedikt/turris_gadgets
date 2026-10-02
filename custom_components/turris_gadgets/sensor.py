@@ -17,8 +17,11 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import TurrisGadgetsConfigEntry
+from .dynamic import setup_dynamic_entities
 from .entity import TurrisPeripheralEntity
 from .hub import Peripheral, TurrisGadgetsHub
+
+PARALLEL_UPDATES = 0
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -55,15 +58,15 @@ LAST_SEEN = TurrisSensorDescription(
 
 
 async def async_setup_entry(
-    _hass: HomeAssistant,
+    hass: HomeAssistant,
     entry: TurrisGadgetsConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up read-only values for registered peripherals."""
     hub = entry.runtime_data
-    entities: list[TurrisSensor] = []
-    for peripheral in hub.peripherals.values():
-        entities.append(TurrisSensor(hub, peripheral, LAST_SEEN))
+
+    def entities_for(peripheral: Peripheral) -> list[TurrisSensor]:
+        entities = [TurrisSensor(hub, peripheral, LAST_SEEN)]
         if peripheral.model == "TP-82N":
             entities.extend(
                 (
@@ -71,7 +74,9 @@ async def async_setup_entry(
                     TurrisSensor(hub, peripheral, TARGET_TEMPERATURE),
                 )
             )
-    async_add_entities(entities)
+        return entities
+
+    setup_dynamic_entities(hass, entry, async_add_entities, entities_for)
 
 
 class TurrisSensor(TurrisPeripheralEntity, SensorEntity):

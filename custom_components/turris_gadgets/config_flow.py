@@ -73,6 +73,42 @@ class TurrisGadgetsConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Allow changing the serial port without removing the integration."""
+        entry = self._get_reconfigure_entry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            port = user_input[CONF_SERIAL_PORT]
+            debug_logging = entry.options.get(
+                CONF_DEBUG_LOGGING,
+                entry.data.get(CONF_DEBUG_LOGGING, DEFAULT_DEBUG_LOGGING),
+            )
+            try:
+                await async_probe(port, debug_logging=debug_logging)
+            except DongleConnectionError, OSError:
+                errors["base"] = "cannot_connect"
+            else:
+                return self.async_update_and_abort(
+                    entry,
+                    data_updates={CONF_SERIAL_PORT: port},
+                    reason="reconfigure_successful",
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_SERIAL_PORT,
+                        default=entry.data[CONF_SERIAL_PORT],
+                    ): str
+                }
+            ),
+            errors=errors,
+        )
+
 
 class TurrisGadgetsOptionsFlow(OptionsFlow):
     """Allow settings to be changed after initial setup."""
@@ -82,7 +118,9 @@ class TurrisGadgetsOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         """Manage Turris Gadgets options."""
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
+            return self.async_create_entry(
+                data={**self.config_entry.options, **user_input}
+            )
 
         current_debug = self.config_entry.options.get(
             CONF_DEBUG_LOGGING,

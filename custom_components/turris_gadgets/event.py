@@ -7,8 +7,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import TurrisGadgetsConfigEntry
+from .dynamic import setup_dynamic_entities
 from .entity import TurrisPeripheralEntity
 from .hub import Peripheral, TurrisGadgetsHub
+
+PARALLEL_UPDATES = 0
 
 EVENT_TYPES = {
     "RC-86K": ["arm", "disarm", "panic"],
@@ -17,16 +20,21 @@ EVENT_TYPES = {
 
 
 async def async_setup_entry(
-    _hass: HomeAssistant,
+    hass: HomeAssistant,
     entry: TurrisGadgetsConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up event entities for registered peripherals."""
     hub = entry.runtime_data
-    async_add_entities(
-        TurrisPeripheralEvent(hub, peripheral, EVENT_TYPES[peripheral.model])
-        for peripheral in hub.peripherals.values()
-        if peripheral.model in EVENT_TYPES
+    setup_dynamic_entities(
+        hass,
+        entry,
+        async_add_entities,
+        lambda peripheral: (
+            [TurrisPeripheralEvent(hub, peripheral, EVENT_TYPES[peripheral.model])]
+            if peripheral.model in EVENT_TYPES
+            else []
+        ),
     )
 
 

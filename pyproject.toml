@@ -1,6 +1,6 @@
 [project]
 name = "turris-gadgets-home-assistant"
-version = "0.1.0"
+version = "0.3.0"
 description = "Home Assistant integration for the Turris Gadgets USB dongle"
 requires-python = ">=3.14.2"
 

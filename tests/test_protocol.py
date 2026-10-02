@@ -84,6 +84,26 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(protocol.identify_command(), b"\x1bWHO AM I?\n")
         self.assertEqual(protocol.get_slot_command(7), b"\x1bGET SLOT:07\n")
 
+    def test_slot_write_commands(self) -> None:
+        self.assertEqual(
+            protocol.set_slot_command(3, 7_439_975),
+            b"\x1bSET SLOT:03 [07439975]\n",
+        )
+        self.assertEqual(
+            protocol.clear_slot_command(31),
+            b"\x1bSET SLOT:31 [--------]\n",
+        )
+
+    def test_slot_commands_validate_input(self) -> None:
+        for slot in (-1, 32):
+            with self.subTest(slot=slot), self.assertRaises(ValueError):
+                protocol.get_slot_command(slot)
+            with self.subTest(slot=slot), self.assertRaises(ValueError):
+                protocol.clear_slot_command(slot)
+        for device_id in (-1, 0x1000000):
+            with self.subTest(device_id=device_id), self.assertRaises(ValueError):
+                protocol.set_slot_command(0, device_id)
+
     def test_transmit_command(self) -> None:
         state = protocol.TransmitState(pgx=True, alarm=True, beep="FAST")
         self.assertEqual(
