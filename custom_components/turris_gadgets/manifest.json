@@ -1,7 +1,7 @@
 {
   "domain": "turris_gadgets",
   "name": "Turris Gadgets",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "integration_type": "hub",
   "config_flow": true,
   "single_config_entry": true,

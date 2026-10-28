@@ -129,7 +129,7 @@ const esc = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-const DEVICE_IMAGE_VERSION = "0.3.0";
+const DEVICE_IMAGE_VERSION = "0.3.1";
 const DEVICE_IMAGE_MODELS = new Set([
   "AC-88",
   "JA-80L",
@@ -249,6 +249,9 @@ class TurrisGadgetsPanel extends HTMLElement {
         * { box-sizing: border-box; }
         main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 48px; }
         header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+        .brand { display: flex; align-items: center; gap: 15px; min-width: 0; }
+        .brand-logo { width: 42px; height: 58px; flex: 0 0 auto; object-fit: contain; }
+        .brand-copy { min-width: 0; }
         h1 { font-size: 30px; line-height: 1.15; margin: 0 0 5px; font-weight: 600; }
         h2 { font-size: 20px; margin: 0 0 8px; font-weight: 600; }
         p { margin: 0; color: var(--secondary-text-color); line-height: 1.5; }
@@ -313,11 +316,12 @@ class TurrisGadgetsPanel extends HTMLElement {
           .section-head { flex-direction: column; }
           .card { padding: 16px; }
           .table-wrap { margin: 0 -16px -16px; }
+          .brand-logo { width: 36px; height: 50px; }
         }
       </style>
       <main>
         <header>
-          <div><h1>${esc(t.title)}</h1><p>${esc(t.subtitle)}</p></div>
+          <div class="brand"><img class="brand-logo" src="/turris_gadgets_static/turris_gadgets_color.svg?v=${DEVICE_IMAGE_VERSION}" alt=""><div class="brand-copy"><h1>${esc(t.title)}</h1><p>${esc(t.subtitle)}</p></div></div>
           <div class="status"><span class="dot" id="connection-dot"></span><strong id="connection-label">—</strong></div>
         </header>
         <div class="notice" id="notice" role="status"></div>

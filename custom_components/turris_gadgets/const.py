@@ -6,7 +6,7 @@ from typing import Final
 
 DOMAIN: Final = "turris_gadgets"
 NAME: Final = "Turris Gadgets"
-VERSION: Final = "0.3.0"
+VERSION: Final = "0.3.1"
 
 CONF_SERIAL_PORT: Final = "serial_port"
 CONF_DEBUG_LOGGING: Final = "debug_logging"

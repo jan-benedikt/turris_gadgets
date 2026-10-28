@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import struct
 import unittest
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
@@ -12,6 +13,7 @@ CONSTANTS_PATH = ROOT / "custom_components" / "turris_gadgets" / "const.py"
 DEVICE_IMAGE_DIR = (
     ROOT / "custom_components" / "turris_gadgets" / "frontend" / "devices"
 )
+FRONTEND_DIR = DEVICE_IMAGE_DIR.parent
 
 SPEC = importlib.util.spec_from_file_location("turris_gadgets_const", CONSTANTS_PATH)
 assert SPEC is not None
@@ -37,6 +39,14 @@ class DeviceImageTest(unittest.TestCase):
                 self.assertEqual(header[:8], b"\x89PNG\r\n\x1a\n")
                 self.assertEqual(struct.unpack(">II", header[16:24]), (512, 512))
                 self.assertEqual(header[25], 6, "PNG must contain an alpha channel")
+
+    def test_bundled_logos_are_valid_svg_files(self) -> None:
+        """Ensure both supplied logo variants are packaged with the panel."""
+        for filename in ("turris_gadgets.svg", "turris_gadgets_color.svg"):
+            with self.subTest(filename=filename):
+                root = ET.parse(FRONTEND_DIR / filename).getroot()
+                self.assertEqual(root.tag, "{http://www.w3.org/2000/svg}svg")
+                self.assertEqual(root.attrib["viewBox"], "0 0 225 312")
 
 
 if __name__ == "__main__":
