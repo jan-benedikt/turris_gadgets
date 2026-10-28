@@ -7,6 +7,7 @@ from typing import Any
 
 import probatio
 from homeassistant.components import panel_custom, websocket_api
+from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant, callback
@@ -27,6 +28,7 @@ from .hub import TurrisGadgetsHub
 
 _FRONTEND_DIR = Path(__file__).parent / "frontend"
 _PANEL_MODULE = f"{PANEL_STATIC_URL}/turris-gadgets-panel.js?v={VERSION}"
+_ICONSET_MODULE = f"{PANEL_STATIC_URL}/turris-gadgets-iconset.js?v={VERSION}"
 
 
 def _slot(value: Any) -> int:
@@ -293,6 +295,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(PANEL_STATIC_URL, str(_FRONTEND_DIR), True)]
     )
+    add_extra_js_url(hass, _ICONSET_MODULE)
     for command in (
         websocket_get_state,
         websocket_subscribe,
@@ -308,7 +311,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
         frontend_url_path=PANEL_URL,
         webcomponent_name="turris-gadgets-panel",
         sidebar_title="Turris Gadgets",
-        sidebar_icon="mdi:radio-tower",
+        sidebar_icon="turris-gadgets:logo",
         module_url=_PANEL_MODULE,
         require_admin=True,
         config_panel_domain=DOMAIN,

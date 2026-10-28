@@ -48,6 +48,18 @@ class DeviceImageTest(unittest.TestCase):
                 self.assertEqual(root.tag, "{http://www.w3.org/2000/svg}svg")
                 self.assertEqual(root.attrib["viewBox"], "0 0 225 312")
 
+    def test_color_logo_is_pure_vector(self) -> None:
+        """Prevent embedded raster backgrounds from breaking the panel logo."""
+        logo = (FRONTEND_DIR / "turris_gadgets_color.svg").read_text()
+        self.assertNotIn("<image", logo)
+        self.assertNotIn("data:image", logo)
+
+    def test_custom_sidebar_iconset_is_packaged(self) -> None:
+        """Keep the sidebar icon independent of Material Design Icons."""
+        iconset = (FRONTEND_DIR / "turris-gadgets-iconset.js").read_text()
+        self.assertIn('window.customIcons["turris-gadgets"]', iconset)
+        self.assertIn("getIcon:", iconset)
+
 
 if __name__ == "__main__":
     unittest.main()
